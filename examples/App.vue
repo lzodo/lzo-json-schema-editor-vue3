@@ -1,18 +1,8 @@
 <template>
   <div id="app">
-    <!-- <div class="title">
-      <a href="https://github.com/zyqwst/json-schema-editor-vue" target="_blank">json-schema-editor-vue</a>
-      Preview
-    </div>
-    <div class="desc">
-      <div>
-        A json-schema editor of high efficient and easy-to-use, base on Vue.
-        <a @click="visible = true">import json</a>
-      </div>
-    </div> -->
     <div class="container">
-      <pre class="code">{{ jsonStr }}</pre>
       <json-schema-editor class="schema" :value="tree" disabledType lang="zh_CN" custom />
+      <pre class="code">{{ jsonStr }}</pre>
     </div>
   </div>
 </template>
@@ -38,10 +28,11 @@ export default {
       tree: {
         root: {
           type: 'object',
-          title: '条件',
+          title: '根节点',
+          required: false,
           properties: {
             name: {
-              type: 'string',
+              type: 'object',
               title: '名称',
               maxLength: 10,
               minLength: 2,
@@ -56,7 +47,7 @@ export default {
               format: 'date',
             },
           },
-          required: ['name', 'appId', 'credate'],
+          // required: ['name', 'appId', 'credate'],
         },
       },
     }
@@ -95,11 +86,12 @@ export default {
 .container {
   display: flex;
   padding: 20px;
-  width: 80vw;
+  width: 100%;
   min-width: 800px;
   justify-content: center;
   height: calc(100vh - 150px);
   margin: auto;
+  flex-direction: column;
 }
 .container pre {
   font-family: monospace;
@@ -108,7 +100,7 @@ export default {
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 4px;
   padding: 12px;
-  width: 50%;
+  width: 100%;
 }
 .code-container {
   max-height: 600px;
@@ -116,7 +108,7 @@ export default {
 }
 .schema {
   margin-left: 20px;
-  width: 50%;
+  width: 100%;
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;

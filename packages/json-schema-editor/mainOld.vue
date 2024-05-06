@@ -1,18 +1,15 @@
 <template>
   <div class="json-schema-editor xxxtest">
-    <div class="row" v-if="root">
-      <div class="col" style="flex: 2">名称</div>
-      <div class="col">含义</div>
-      <div class="col" style="flex: none; width: 120px">类型</div>
-      <div class="col" style="flex: none; width: 120px">必填</div>
-      <div class="col">默认值</div>
-      <div class="col">参数示例</div>
-      <div class="col">备注</div>
-      <div class="col left">操作</div>
-    </div>
-    <div class="row">
-      <!-- 名称  -->
-      <div class="ant-col-name col" style="flex: 2">
+    <a-row class="row" :gutter="10" v-if="root" justify="center">
+      <a-col :span="6">字段</a-col>
+      <!-- <a-col :span="2">必填</a-col> -->
+      <a-col :span="4">类型</a-col>
+      <a-col :span="6">字段名</a-col>
+      <a-col :span="4">操作</a-col>
+    </a-row>
+    <a-row class="row" :gutter="10">
+      <!-- 字段 + 是否必填 -->
+      <a-col :span="6" class="ant-col-name">
         <div :style="{ marginLeft: `${20 * deep}px` }" class="ant-col-name-c">
           <a-button v-if="pickValue.type === 'object'" type="link" style="color: rgba(0, 0, 0, 0.65)" @click="hidden = !hidden">
             <template #icon>
@@ -23,14 +20,21 @@
           <span v-else style="width: 32px; display: inline-block"></span>
           <a-input :disabled="disabled || root" :default-value="pickKey" class="ant-col-name-input" @blur="onInputName" :key="pickValue" />
         </div>
-      </div>
-      <!-- 含义 字段标题 -->
-      <div class="col" :span="6">
-        <a-input v-model:value="pickValue.title" class="ant-col-title" :placeholder="local['title']" :disabled="disabledType" />
-      </div>
+        <a-tooltip v-if="root">
+          <template v-slot:title>{{ local['checked_all'] }}</template>
+          <a-checkbox :disabled="!isObject && !isArray" class="ant-col-name-required" @change="onRootCheck" />
+        </a-tooltip>
+        <a-tooltip v-else>
+          <template v-slot:title>{{ local['required'] }}</template>
+          <a-checkbox :disabled="isItem" :checked="checked" class="ant-col-name-required" @change="onCheck" />
+        </a-tooltip>
+      </a-col>
+      <!-- 是否必填 -->
+      <!-- <a-col :span="2">
+      </a-col> -->
 
       <!-- 数据类型 -->
-      <div class="col" style="flex: none; width: 120px">
+      <a-col :span="4">
         <a-select
           v-model:value="pickValue.type"
           :disabled="disabledType"
@@ -46,53 +50,13 @@
             {{ t }}
           </a-select-option>
         </a-select>
-      </div>
-
-      <!-- 是否必填 -->
-      <div class="col required" style="flex: none; width: 120px">
-        <!-- 提取到外面 -->
-        <!-- <a-tooltip v-if="root">
-          <template v-slot:title>{{ local['checked_all'] }}</template>
-          <a-checkbox :disabled="!isObject && !isArray" class="ant-col-name-required" @change="onRootCheck" />
-        </a-tooltip>
-        <a-tooltip v-else>
-          <template v-slot:title>{{ local['required'] }}</template>
-          <a-checkbox :disabled="isItem" :checked="checked" class="ant-col-name-required" @change="onCheck" />
-        </a-tooltip> -->
-        <!-- 不提取到外面 -->
-        <a-select
-          v-model:value="pickValue.required"
-          :disabled="disabledType"
-          class="ant-col-type"
-          :getPopupContainer="
-            (triggerNode) => {
-              return triggerNode.parentNode || document.body
-            }
-          "
-        >
-          <a-select-option :key="t.key" :value="t.value" v-for="t in requiredMap">
-            {{ t.key }}
-          </a-select-option>
-        </a-select>
-      </div>
-
-      <!-- 默认值 -->
-      <div class="col" :span="6">
-        <a-input v-model:value="pickValue.default" class="ant-col-title" :placeholder="local['default']" :disabled="disabledType" />
-      </div>
-
-      <!-- 参数示例 -->
-      <div class="col" :span="6">
-        <a-input v-model:value="pickValue.description" class="ant-col-title" :placeholder="local['description']" :disabled="disabledType" />
-      </div>
-
-      <!-- 备注 -->
-      <div class="col" :span="6">
-        <a-input v-model:value="pickValue.example" class="ant-col-title" :placeholder="local['example']" :disabled="disabledType" />
-      </div>
-
+      </a-col>
+      <!-- 字段标题 -->
+      <a-col :span="6">
+        <a-input v-model:value="pickValue.title" class="ant-col-title" :placeholder="local['title']" />
+      </a-col>
       <!-- 图标 -->
-      <div :span="6" class="ant-col-setting col left">
+      <a-col :span="6" class="ant-col-setting">
         <a-tooltip>
           <template v-slot:title>{{ local['adv_setting'] }}</template>
           <a-button type="link" class="setting-icon" @click="onSetting">
@@ -118,8 +82,8 @@
             </i>
           </a-button>
         </a-tooltip>
-      </div>
-    </div>
+      </a-col>
+    </a-row>
     <template v-if="!hidden && pickValue.properties && !isArray">
       <json-schema-editor
         v-for="(item, key, index) in pickValue.properties"
@@ -357,16 +321,6 @@ export default {
       customProps: [],
       customing: false,
       local: LocalProvider(this.lang),
-      requiredMap: [
-        {
-          key: '是',
-          value: true,
-        },
-        {
-          key: '否',
-          value: false,
-        },
-      ],
     }
   },
   methods: {
@@ -549,23 +503,8 @@ export default {
 <style scoped>
 .json-schema-editor .row {
   display: flex;
-  width: 100%;
-  margin-bottom: 7px;
-  /* margin: 12px; */
+  margin: 12px;
 }
-.json-schema-editor .row .col {
-  padding: 0 8px;
-  flex: 1;
-  text-align: center;
-  /* margin: 12px; */
-}
-.json-schema-editor .row .col.left {
-  text-align: left;
-}
-.json-schema-editor .row .col.left.handler {
-  padding-left: 30px;
-}
-
 .json-schema-editor .row .ant-col-name {
   display: flex;
   align-items: center;
