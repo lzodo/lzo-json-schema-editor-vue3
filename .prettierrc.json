@@ -1,0 +1,11 @@
+{
+	"useTabs": false,
+	"tabWidth": 2,
+	"printWidth": 160,
+	"singleQuote": true,
+	"trailingComma": "all",
+	"semi": false,
+	"insertPragma": false,
+	"embeddedLanguageFormatting": "auto"
+	
+}
