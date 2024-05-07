@@ -1,5 +1,5 @@
 <template>
-  <div class="json-schema-editor">
+  <div class="json-schema-editor xxxtest">
     <div class="row" v-if="root">
       <div class="col" style="flex: 2">名称</div>
       <div class="col">含义</div>
@@ -10,60 +10,55 @@
       <div class="col">备注</div>
       <div class="col left">操作</div>
     </div>
-
-    <a-form ref="ruleForm" class="row" :model="pickValue" :rules="rules">
-      <!-- 名称  -->
-      <div class="ant-col-name col" style="flex: 2">
-        <div :style="{ marginLeft: `${20 * deep}px` }" class="ant-col-name-c">
-          <a-button v-if="pickValue.type === 'object'" type="link" style="color: rgba(0, 0, 0, 0.65)" @click="hidden = !hidden">
-            <template #icon>
-              <caret-right-outlined v-if="hidden" />
-              <caret-down-outlined v-else />
-            </template>
-          </a-button>
-          <span v-else style="width: 32px; display: inline-block"></span>
-          <a-form-item name="name">
-            <a-input
-              v-model:value="pickValue.name"
-              :disabled="disabled || root"
-              :default-value="pickKey"
-              class="ant-col-name-input"
-              @blur="onInputName"
-              :key="pickValue"
-            />
+    <div class="row">
+      <a-form :model="pickValue" :rules="rules" @finish="verification">
+        <!-- 名称  -->
+        <!-- <div class="ant-col-name col" style="flex: 2">
+          <div :style="{ marginLeft: `${20 * deep}px` }" class="ant-col-name-c">
+            <a-button v-if="pickValue.type === 'object'" type="link" style="color: rgba(0, 0, 0, 0.65)" @click="hidden = !hidden">
+              <template #icon>
+                <caret-right-outlined v-if="hidden" />
+                <caret-down-outlined v-else />
+              </template>
+            </a-button>
+            <span v-else style="width: 32px; display: inline-block"></span>
+            <a-form-item>
+              <a-input :disabled="disabled || root" :default-value="pickKey" class="ant-col-name-input" @blur="onInputName" :key="pickValue" />
+            </a-form-item>
+          </div>
+        </div> -->
+        <!-- 含义 字段标题 -->
+        <div class="col" :span="6">
+          <a-form-item name="title">
+            <a-input v-model:value="pickValue.title" class="ant-col-title" :placeholder="local['title']" :disabled="disabledType" />
           </a-form-item>
         </div>
-      </div>
-      <!-- 含义 字段标题 -->
-      <div class="col" :span="6">
-        <a-form-item name="title">
-          <a-input v-model:value="pickValue.title" class="ant-col-title" :placeholder="local['title']" :disabled="disabledType" />
-        </a-form-item>
-      </div>
 
-      <!-- 数据类型 -->
-      <div class="col" style="flex: none; width: 120px">
-        <a-select
-          v-model:value="pickValue.type"
-          :disabled="disabledType"
-          class="ant-col-type"
-          @change="onChangeType"
-          :getPopupContainer="
-            (triggerNode) => {
-              return triggerNode.parentNode || document.body
-            }
-          "
-        >
-          <a-select-option :key="t" v-for="t in TYPE_NAME">
-            {{ t }}
-          </a-select-option>
-        </a-select>
-      </div>
+        <!-- 数据类型 -->
+        <div class="col" style="flex: none; width: 120px">
+          <a-form-item name="type">
+            <a-select
+              v-model:value="pickValue.type"
+              :disabled="disabledType"
+              class="ant-col-type"
+              @change="onChangeType"
+              :getPopupContainer="
+                (triggerNode) => {
+                  return triggerNode.parentNode || document.body
+                }
+              "
+            >
+              <a-select-option :key="t" v-for="t in TYPE_NAME">
+                {{ t }}
+              </a-select-option>
+            </a-select>
+          </a-form-item>
+        </div>
 
-      <!-- 是否必填 -->
-      <div class="col required" style="flex: none; width: 120px">
-        <!-- 提取到外面 -->
-        <!-- <a-tooltip v-if="root">
+        <!-- 是否必填 -->
+        <div class="col required" style="flex: none; width: 120px">
+          <!-- 提取到外面 -->
+          <!-- <a-tooltip v-if="root">
           <template v-slot:title>{{ local['checked_all'] }}</template>
           <a-checkbox :disabled="!isObject && !isArray" class="ant-col-name-required" @change="onRootCheck" />
         </a-tooltip>
@@ -71,69 +66,76 @@
           <template v-slot:title>{{ local['required'] }}</template>
           <a-checkbox :disabled="isItem" :checked="checked" class="ant-col-name-required" @change="onCheck" />
         </a-tooltip> -->
-        <!-- 不提取到外面 -->
+          <!-- 不提取到外面 -->
+          <a-form-item name="required">
+            <a-select
+              v-model:value="pickValue.required"
+              :disabled="disabledType"
+              class="ant-col-type"
+              :getPopupContainer="
+                (triggerNode) => {
+                  return triggerNode.parentNode || document.body
+                }
+              "
+            >
+              <a-select-option :key="t.key" :value="t.value" v-for="t in requiredMap">
+                {{ t.key }}
+              </a-select-option>
+            </a-select>
+          </a-form-item>
+        </div>
 
-        <a-select
-          v-model:value="pickValue.require"
-          :disabled="disabledType"
-          class="ant-col-type"
-          :getPopupContainer="
-            (triggerNode) => {
-              return triggerNode.parentNode || document.body
-            }
-          "
-        >
-          <a-select-option :key="t.key" :value="t.value" v-for="t in requiredMap">
-            {{ t.key }}
-          </a-select-option>
-        </a-select>
-      </div>
+        <!-- 默认值 -->
+        <div class="col" :span="6">
+          <a-form-item name="default">
+            <a-input v-model:value="pickValue.default" class="ant-col-title" :placeholder="local['default']" :disabled="disabledType" />
+          </a-form-item>
+        </div>
 
-      <!-- 默认值 -->
-      <div class="col" :span="6">
-        <a-input v-model:value="pickValue.default" class="ant-col-title" :placeholder="local['default']" :disabled="disabledType" />
-      </div>
+        <!-- 参数示例 -->
+        <div class="col" :span="6">
+          <a-form-item name="description">
+            <a-input v-model:value="pickValue.description" class="ant-col-title" :placeholder="local['description']" :disabled="disabledType" />
+          </a-form-item>
+        </div>
 
-      <!-- 参数示例 -->
-      <div class="col" :span="6">
-        <a-input v-model:value="pickValue.description" class="ant-col-title" :placeholder="local['description']" :disabled="disabledType" />
-      </div>
+        <!-- 备注 -->
+        <div class="col" :span="6">
+          <a-form-item name="example">
+            <a-input v-model:value="pickValue.example" class="ant-col-title" :placeholder="local['example']" :disabled="disabledType" />
+          </a-form-item>
+        </div>
 
-      <!-- 备注 -->
-      <div class="col" :span="6">
-        <a-input v-model:value="pickValue.example" class="ant-col-title" :placeholder="local['example']" :disabled="disabledType" />
-      </div>
-
-      <!-- 图标 -->
-      <div :span="6" class="ant-col-setting col left">
-        <a-tooltip>
-          <template v-slot:title>{{ local['adv_setting'] }}</template>
-          <a-button type="link" class="setting-icon" @click="onSetting">
-            <template #icon><setting-outlined /></template>
-          </a-button>
-        </a-tooltip>
-        <a-tooltip v-if="isObject">
-          <template v-slot:title>{{ local['add_child_node'] }}</template>
-          <a-button type="link" class="plus-icon" @click="addChild">
-            <template #icon><plus-outlined /></template>
-          </a-button>
-        </a-tooltip>
-        <a-tooltip v-if="!root && !isItem">
-          <template v-slot:title>{{ local['remove_node'] }}</template>
-          <a-button type="link" class="close-icon ant-btn-icon-only" @click="removeNode">
-            <i aria-label="icon: plus" class="anticon anticon-plus">
-              <svg viewBox="64 64 896 896" data-icon="plus" width="1em" height="1em" fill="currentColor" aria-hidden="true" focusable="false" class="">
-                <path
-                  d="M810.666667 273.493333L750.506667 213.333333 512 451.84 273.493333 213.333333 213.333333 273.493333 451.84 512 213.333333 750.506667 273.493333 810.666667 512 572.16 750.506667 810.666667 810.666667 750.506667 572.16 512z"
-                  p-id="1142"
-                ></path>
-              </svg>
-            </i>
-          </a-button>
-        </a-tooltip>
-      </div>
-    </a-form>
-
+        <!-- 图标 -->
+        <div :span="6" class="ant-col-setting col left">
+          <a-tooltip>
+            <template v-slot:title>{{ local['adv_setting'] }}</template>
+            <a-button type="link" class="setting-icon" @click="onSetting">
+              <template #icon><setting-outlined /></template>
+            </a-button>
+          </a-tooltip>
+          <a-tooltip v-if="isObject">
+            <template v-slot:title>{{ local['add_child_node'] }}</template>
+            <a-button type="link" class="plus-icon" @click="addChild">
+              <template #icon><plus-outlined /></template>
+            </a-button>
+          </a-tooltip>
+          <a-tooltip v-if="!root && !isItem">
+            <template v-slot:title>{{ local['remove_node'] }}</template>
+            <a-button type="link" class="close-icon ant-btn-icon-only" @click="removeNode">
+              <i aria-label="icon: plus" class="anticon anticon-plus">
+                <svg viewBox="64 64 896 896" data-icon="plus" width="1em" height="1em" fill="currentColor" aria-hidden="true" focusable="false" class="">
+                  <path
+                    d="M810.666667 273.493333L750.506667 213.333333 512 451.84 273.493333 213.333333 213.333333 273.493333 451.84 512 213.333333 750.506667 273.493333 810.666667 512 572.16 750.506667 810.666667 810.666667 750.506667 572.16 512z"
+                    p-id="1142"
+                  ></path>
+                </svg>
+              </i>
+            </a-button>
+          </a-tooltip>
+        </div>
+      </a-form>
+    </div>
     <template v-if="!hidden && pickValue.properties && !isArray">
       <json-schema-editor
         v-for="(item, key, index) in pickValue.properties"
@@ -150,7 +152,6 @@
     <template v-if="isArray">
       <json-schema-editor :value="{ items: pickValue.items }" :deep="deep + 1" disabled isItem :root="false" class="children" :lang="lang" :custom="custom" />
     </template>
-    <a-button type="primary" v-if="root" @click="verification">验证</a-button>
     <a-modal
       v-model:visible="modalVisible"
       v-if="modalVisible"
@@ -383,17 +384,27 @@ export default {
         },
       ],
       rules: {
-        name: [
+        account: [
           {
             required: true,
-            message: '请输入名称',
+            message: '请输入账户',
+            type: 'string',
+          },
+          {
+            pattern: /^[0-9a-zA-Z]*$/,
+            message: '账户只能为字母或数字',
             type: 'string',
           },
         ],
-        title: [
+        password: [
           {
             required: true,
-            message: '请输入',
+            message: '请输入密码',
+            type: 'string',
+          },
+          {
+            pattern: /^[0-9a-zA-Z~!@#$%^&*()_+]*$/,
+            message: '账户只能为字母或数字或特殊字符',
             type: 'string',
           },
         ],
@@ -401,7 +412,9 @@ export default {
     }
   },
   methods: {
-    verification() {},
+    verification() {
+      console.log(this.pickKey)
+    },
     onInputName(e) {
       const oldKey = this.pickKey
       const newKey = e.target.value
@@ -494,7 +507,7 @@ export default {
       const node = this.pickValue
       node.properties || (node['properties'] = {}) // this.$set(node,'properties',{})
       const props = node.properties
-      props[name] = { type: type, require: false } //this.$set(props,name,{type: type})
+      props[name] = { type: type } //this.$set(props,name,{type: type})
     },
     parseCustomProps() {
       const ownProps = this.ownProps
@@ -582,7 +595,7 @@ export default {
 .json-schema-editor .row {
   display: flex;
   width: 100%;
-  margin-bottom: 28px;
+  margin-bottom: 7px;
   /* margin: 12px; */
 }
 .json-schema-editor .row .col {
@@ -654,17 +667,5 @@ export default {
 }
 .json-schema-editor-advanced-modal .ant-advanced-search-form .ant-form-item .ant-form-item-control-wrapper {
   flex: 1;
-}
-
-.json-schema-editor .ant-form-item {
-  margin-bottom: 0 !important;
-}
-.json-schema-editor .ant-form-item-explain.ant-form-item-explain-connected {
-  position: absolute;
-  left: 4px;
-  top: 100%;
-}
-.json-schema-editor .ant-form-item {
-  width: 100%;
 }
 </style>

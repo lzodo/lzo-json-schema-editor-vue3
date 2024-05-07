@@ -28,8 +28,9 @@ export default {
       tree: {
         root: {
           type: 'object',
+          name: 'root',
           title: '根节点',
-          required: false,
+          require: false,
           properties: {
             name: {
               type: 'object',
