@@ -28,7 +28,6 @@ export default {
       tree: {
         root: {
           type: 'object',
-          name: 'root',
           title: '根节点',
           require: false,
           properties: {
@@ -37,15 +36,18 @@ export default {
               title: '名称',
               maxLength: 10,
               minLength: 2,
+              require: false,
             },
             appId: {
               type: 'integer',
               title: '应用ID',
+              require: false,
             },
             credate: {
               type: 'string',
               title: '创建日期',
               format: 'date',
+              require: false,
             },
           },
           // required: ['name', 'appId', 'credate'],

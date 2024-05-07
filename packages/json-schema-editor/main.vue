@@ -1,8 +1,8 @@
 <template>
   <div class="json-schema-editor">
     <div class="row" v-if="root">
-      <div class="col" style="flex: 2">名称</div>
-      <div class="col">含义</div>
+      <div class="col" style="flex: 2">属性</div>
+      <div class="col">名称</div>
       <div class="col" style="flex: none; width: 120px">类型</div>
       <div class="col" style="flex: none; width: 120px">必填</div>
       <div class="col">默认值</div>
@@ -11,7 +11,7 @@
       <div class="col left">操作</div>
     </div>
 
-    <a-form ref="ruleForm" class="row" :model="pickValue" :rules="rules">
+    <a-form ref="ruleForm" class="row" :model="pickValue" :rules="rules" @finish="onFinish">
       <!-- 名称  -->
       <div class="ant-col-name col" style="flex: 2">
         <div :style="{ marginLeft: `${20 * deep}px` }" class="ant-col-name-c">
@@ -22,9 +22,9 @@
             </template>
           </a-button>
           <span v-else style="width: 32px; display: inline-block"></span>
-          <a-form-item name="name">
+          <a-form-item name="fielId">
             <a-input
-              v-model:value="pickValue.name"
+              v-model:value="pickValue.fielId"
               :disabled="disabled || root"
               :default-value="pickKey"
               class="ant-col-name-input"
@@ -150,7 +150,8 @@
     <template v-if="isArray">
       <json-schema-editor :value="{ items: pickValue.items }" :deep="deep + 1" disabled isItem :root="false" class="children" :lang="lang" :custom="custom" />
     </template>
-    <a-button type="primary" v-if="root" @click="verification">验证</a-button>
+    <!-- <a-button type="primary" v-if="root" @click="verification">验证</a-button> -->
+    <!-- <a-button type="primary" html-type="submit" @click="onFinish">Search</a-button> -->
     <a-modal
       v-model:visible="modalVisible"
       v-if="modalVisible"
@@ -315,7 +316,10 @@ export default {
   },
   computed: {
     pickValue() {
-      return Object.values(this.value)[0]
+      let pack = Object.values(this.value)[0]
+      pack.fielId = Object.keys(this.value)[0]
+
+      return pack
     },
     pickKey() {
       return Object.keys(this.value)[0]
@@ -383,17 +387,17 @@ export default {
         },
       ],
       rules: {
-        name: [
+        fielId: [
           {
             required: true,
-            message: '请输入名称',
+            message: '请输入属性',
             type: 'string',
           },
         ],
         title: [
           {
             required: true,
-            message: '请输入',
+            message: '请输入名称',
             type: 'string',
           },
         ],
@@ -401,7 +405,12 @@ export default {
     }
   },
   methods: {
-    verification() {},
+    onFinish() {
+      // console.log(this.$refs.ruleForm, 889990)
+      // this.$refs.ruleForm.validate().then(() => {
+      //   console.log('values')
+      // })
+    },
     onInputName(e) {
       const oldKey = this.pickKey
       const newKey = e.target.value
@@ -582,7 +591,7 @@ export default {
 .json-schema-editor .row {
   display: flex;
   width: 100%;
-  margin-bottom: 28px;
+  margin-bottom: 20px;
   /* margin: 12px; */
 }
 .json-schema-editor .row .col {
