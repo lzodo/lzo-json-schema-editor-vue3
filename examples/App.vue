@@ -34,8 +34,6 @@ export default {
             name: {
               type: 'object',
               title: '名称',
-              maxLength: 10,
-              minLength: 2,
               require: false,
             },
             appId: {

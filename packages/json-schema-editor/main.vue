@@ -1,17 +1,17 @@
 <template>
   <div class="json-schema-editor">
     <div class="row" v-if="root">
-      <div class="col" style="flex: 2">属性</div>
-      <div class="col">名称</div>
-      <div class="col" style="flex: none; width: 120px">类型</div>
-      <div class="col" style="flex: none; width: 120px">必填</div>
+      <div class="col" style="flex: 2"><span style="color: red">*</span>属性名</div>
+      <div class="col"><span style="color: red">*</span>属性含义</div>
+      <div class="col" style="flex: none; width: 120px"><span style="color: red">*</span>类型</div>
+      <div class="col" style="flex: none; width: 120px"><span style="color: red">*</span>是否必填</div>
       <div class="col">默认值</div>
       <div class="col">参数示例</div>
       <div class="col">备注</div>
       <div class="col left">操作</div>
     </div>
 
-    <a-form ref="ruleForm" class="row" :model="pickValue" :rules="rules" @finish="onFinish">
+    <a-form ref="ruleForm" class="row" :model="pickValue">
       <!-- 名称  -->
       <div class="ant-col-name col" style="flex: 2">
         <div :style="{ marginLeft: `${20 * deep}px` }" class="ant-col-name-c">
@@ -22,7 +22,7 @@
             </template>
           </a-button>
           <span v-else style="width: 32px; display: inline-block"></span>
-          <a-form-item name="fielId">
+          <a-form-item name="fielId" :rules="[{ required: true, message: '请输入名称' }]">
             <a-input
               v-model:value="pickValue.fielId"
               :disabled="disabled || root"
@@ -36,7 +36,7 @@
       </div>
       <!-- 含义 字段标题 -->
       <div class="col" :span="6">
-        <a-form-item name="title">
+        <a-form-item name="title" :rules="[{ required: true, message: '请输入含义' }]">
           <a-input v-model:value="pickValue.title" class="ant-col-title" :placeholder="local['title']" :disabled="disabledType" />
         </a-form-item>
       </div>
@@ -155,7 +155,7 @@
     <a-modal
       v-model:visible="modalVisible"
       v-if="modalVisible"
-      :title="local['adv_setting']"
+      :title="local['preview']"
       :maskClosable="false"
       :okText="local['ok']"
       :cancelText="local['cancel']"
@@ -163,7 +163,8 @@
       @ok="handleOk"
       wrapClassName="json-schema-editor-advanced-modal"
     >
-      <h3>{{ local['base_setting'] }}</h3>
+      <!-- 弹窗基本信息设置 -->
+      <!-- <h3>{{ local['base_setting'] }}</h3>
       <a-form :model="advancedValue" class="ant-advanced-search-form">
         <a-row :gutter="6">
           <a-col :span="8" v-for="(item, key) in advancedValue" :key="key">
@@ -199,8 +200,9 @@
             </a-form-item>
           </a-col>
         </a-row>
-      </a-form>
-      <h3 v-show="custom">{{ local['add_custom'] }}</h3>
+      </a-form> -->
+      <!-- 自定义属性  -->
+      <!-- <h3 v-show="custom">{{ local['add_custom'] }}</h3>
       <a-form class="ant-advanced-search-form" v-show="custom">
         <a-row :gutter="6">
           <a-col :span="8" v-for="item in customProps" :key="item.key">
@@ -230,7 +232,7 @@
             </a-form-item>
           </a-col>
         </a-row>
-      </a-form>
+      </a-form> -->
       <h3>{{ local['preview'] }}</h3>
       <pre style="width: 100%">{{ completeNodeValue }}</pre>
     </a-modal>
