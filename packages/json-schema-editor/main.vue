@@ -160,10 +160,21 @@
         class="children"
         :lang="lang"
         :custom="custom"
+        pmsType
       />
     </template>
     <template v-if="isArray">
-      <json-schema-editor :value="{ items: pickValue.items }" :deep="deep + 1" disabled isItem :root="false" class="children" :lang="lang" :custom="custom" />
+      <json-schema-editor
+        pmsType
+        :value="{ items: pickValue.items }"
+        :deep="deep + 1"
+        disabled
+        isItem
+        :root="false"
+        class="children"
+        :lang="lang"
+        :custom="custom"
+      />
     </template>
     <!-- <a-button type="primary" v-if="root" @click="verification">验证</a-button> -->
     <!-- <a-button type="primary" html-type="submit" @click="onFinish">Search</a-button> -->

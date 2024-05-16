@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div class="container">
-      <json-schema-editor class="schema" :value="tree" disabledType lang="zh_CN" custom />
+      <json-schema-editor class="schema" :value="tree" disabledType lang="zh_CN" custom pmsType="debug" />
       <pre class="code">{{ jsonStr }}</pre>
     </div>
   </div>
