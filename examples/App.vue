@@ -27,22 +27,22 @@ export default {
       visible: false,
       tree: {
         root: {
-          type: 'object',
+          type: 'Object',
           title: '根节点',
           require: false,
           properties: {
             name: {
-              type: 'object',
+              type: 'Object',
               title: '名称',
               require: false,
             },
             appId: {
-              type: 'integer',
+              type: 'Integer',
               title: '应用ID',
               require: false,
             },
             credate: {
-              type: 'string',
+              type: 'String',
               title: '创建日期',
               format: 'date',
               require: false,

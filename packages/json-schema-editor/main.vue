@@ -6,8 +6,8 @@
       <div class="col" style="flex: none; width: 120px"><span style="color: red">*</span>类型</div>
       <div class="col" style="flex: none; width: 120px"><span style="color: red">*</span>是否必填</div>
       <div class="col">默认值</div>
-      <div class="col">参数示例</div>
-      <div class="col">备注</div>
+      <!-- <div class="col">参数示例</div>
+      <div class="col">备注</div> -->
       <div class="col left">操作</div>
     </div>
 
@@ -95,14 +95,14 @@
       </div>
 
       <!-- 参数示例 -->
-      <div class="col" :span="6">
+      <!-- <div class="col" :span="6">
         <a-input v-model:value="pickValue.description" class="ant-col-title" :placeholder="local['description']" :disabled="disabledType" />
-      </div>
+      </div> -->
 
       <!-- 备注 -->
-      <div class="col" :span="6">
+      <!-- <div class="col" :span="6">
         <a-input v-model:value="pickValue.example" class="ant-col-title" :placeholder="local['example']" :disabled="disabledType" />
-      </div>
+      </div> -->
 
       <!-- 图标 -->
       <div :span="6" class="ant-col-setting col left">
@@ -317,7 +317,7 @@ export default {
     },
     pmsType: {
       type: String,
-      default: 'debug', // api_config debug
+      default: 'api_config', // api_config debug
     },
   },
   computed: {
