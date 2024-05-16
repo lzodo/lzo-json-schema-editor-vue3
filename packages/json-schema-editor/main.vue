@@ -5,7 +5,7 @@
       <div class="col"><span style="color: red">*</span>属性含义</div>
       <div class="col" style="flex: none; width: 120px"><span style="color: red">*</span>类型</div>
       <div class="col" style="flex: none; width: 120px"><span style="color: red">*</span>是否必填</div>
-      <div class="col">默认值</div>
+      <div class="col">{{ isApiConfig ? '默认值' : '参数值' }}</div>
       <div class="col" style="flex: none; width: 60px" v-if="isApiConfig">存入参</div>
       <!-- <div class="col">参数示例</div>
       <div class="col">备注</div> -->
@@ -92,7 +92,7 @@
 
       <!-- 默认值 -->
       <div class="col" :span="6">
-        <a-input v-model:value="pickValue.default" class="ant-col-title" :placeholder="local['default']" :disabled="disabledType" />
+        <a-input v-model:value="pickValue.defaultValue" class="ant-col-title" :placeholder="local['defaultValue']" :disabled="disabledType" />
       </div>
 
       <!-- 参数示例 -->
@@ -160,12 +160,11 @@
         class="children"
         :lang="lang"
         :custom="custom"
-        pmsType
+        :pmsType="pmsType"
       />
     </template>
     <template v-if="isArray">
       <json-schema-editor
-        pmsType
         :value="{ items: pickValue.items }"
         :deep="deep + 1"
         disabled
@@ -174,6 +173,7 @@
         class="children"
         :lang="lang"
         :custom="custom"
+        :pmsType="pmsType"
       />
     </template>
     <!-- <a-button type="primary" v-if="root" @click="verification">验证</a-button> -->
