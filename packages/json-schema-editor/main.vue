@@ -6,6 +6,7 @@
       <div class="col" style="flex: none; width: 120px"><span style="color: red">*</span>类型</div>
       <div class="col" style="flex: none; width: 120px"><span style="color: red">*</span>是否必填</div>
       <div class="col">默认值</div>
+      <div class="col" style="flex: none; width: 60px" v-if="isApiConfig">存入参</div>
       <!-- <div class="col">参数示例</div>
       <div class="col">备注</div> -->
       <div class="col left">操作</div>
@@ -103,13 +104,21 @@
       <!-- <div class="col" :span="6">
         <a-input v-model:value="pickValue.example" class="ant-col-title" :placeholder="local['example']" :disabled="disabledType" />
       </div> -->
+      <!-- 是否存为入参 -->
+      <div class="col" v-if="isApiConfig" style="flex: none; width: 60px">
+        <a-tooltip>
+          <template v-slot:title>是否存为后续接口入参</template>
+          <a-checkbox v-model:checked="pickValue.isSaveNext" class="ant-col-name-required" />
+        </a-tooltip>
+      </div>
 
       <!-- 图标 -->
       <div :span="6" class="ant-col-setting col left">
         <a-tooltip>
-          <template v-slot:title>{{ local['adv_setting'] }}</template>
+          <template v-slot:title>{{ local['preview'] }}</template>
           <a-button type="link" class="setting-icon" @click="onSetting">
-            <template #icon><setting-outlined /></template>
+            <!-- <template #icon><setting-outlined /></template> -->
+            <template #icon><eye-outlined /></template>
           </a-button>
         </a-tooltip>
         <a-tooltip v-if="isObject">
@@ -121,7 +130,13 @@
         <a-tooltip v-if="!root && !isItem">
           <template v-slot:title>{{ local['remove_node'] }}</template>
           <a-button type="link" class="close-icon ant-btn-icon-only" @click="removeNode">
-            <i aria-label="icon: plus" class="anticon anticon-plus">
+            <template #icon><delete-outlined /></template>
+          </a-button>
+          <!-- <a-button type="link" class="close-icon ant-btn-icon-only" @click="removeNode">
+            <i aria-label="icon: plus" class="anticon anticon-plus"
+              >
+           
+              DeleteOutlined
               <svg viewBox="64 64 896 896" data-icon="plus" width="1em" height="1em" fill="currentColor" aria-hidden="true" focusable="false" class="">
                 <path
                   d="M810.666667 273.493333L750.506667 213.333333 512 451.84 273.493333 213.333333 213.333333 273.493333 451.84 512 213.333333 750.506667 273.493333 810.666667 512 572.16 750.506667 810.666667 810.666667 750.506667 572.16 512z"
@@ -129,7 +144,7 @@
                 ></path>
               </svg>
             </i>
-          </a-button>
+          </a-button> -->
         </a-tooltip>
       </div>
     </a-form>
@@ -233,7 +248,7 @@
           </a-col>
         </a-row>
       </a-form> -->
-      <h3>{{ local['preview'] }}</h3>
+      <!-- <h3>{{ local['preview'] }}</h3> -->
       <pre style="width: 100%">{{ completeNodeValue }}</pre>
     </a-modal>
   </div>
@@ -242,7 +257,16 @@
 import { isNull, renamePropertyAndKeepKeyPrecedence } from './util'
 import { TYPE_NAME, TYPE } from './type/type'
 import { Row, Col, Button, Input, InputNumber, Icon, Checkbox, Select, Tooltip, Modal, Form, Switch } from 'ant-design-vue'
-import { CaretRightOutlined, CaretDownOutlined, SettingOutlined, PlusOutlined, CloseOutlined, CheckOutlined } from '@ant-design/icons-vue'
+import {
+  CaretRightOutlined,
+  CaretDownOutlined,
+  SettingOutlined,
+  PlusOutlined,
+  CloseOutlined,
+  CheckOutlined,
+  EyeOutlined,
+  DeleteOutlined,
+} from '@ant-design/icons-vue'
 import LocalProvider from './LocalProvider'
 export default {
   name: 'JsonSchemaEditor',
@@ -266,6 +290,8 @@ export default {
     CaretRightOutlined,
     CaretDownOutlined,
     SettingOutlined,
+    EyeOutlined,
+    DeleteOutlined,
     PlusOutlined,
     CloseOutlined,
     CheckOutlined,
@@ -447,7 +473,10 @@ export default {
       this.parseCustomProps()
       // 删除自定义属性
       this.customProps.forEach((item) => {
-        delete this.pickValue[item.key]
+        // 框架设定全部三次，自己自定义的这个连个不能删
+        if (!['require', 'fielId'].includes(item.key)) {
+          delete this.pickValue[item.key]
+        }
       })
       this.customProps = []
 
