@@ -253,7 +253,7 @@
 </template>
 <script>
 import { isNull, renamePropertyAndKeepKeyPrecedence } from './util'
-import { TYPE_NAME, TYPE } from './type/type'
+import { TYPE_NAME } from './type/type'
 import { Row, Col, Button, Input, InputNumber, Icon, Checkbox, Select, Tooltip, Modal, Form, Switch } from 'ant-design-vue'
 import {
   CaretRightOutlined,
@@ -360,19 +360,19 @@ export default {
       return this.pickValue.type === 'Object'
     },
     isArray() {
-      return this.pickValue.type === 'Array'
+      return this.pickValue.type === 'List'
     },
     checked() {
       return this.parent && this.parent.required && this.parent.required.indexOf(this.pickKey) >= 0
     },
-    advanced() {
-      return TYPE[this.pickValue.type]
-    },
-    advancedAttr() {
-      return TYPE[this.pickValue.type].attr
-    },
+    // advanced() {
+    //   return TYPE[this.pickValue.type]
+    // },
+    // advancedAttr() {
+    //   return TYPE[this.pickValue.type].attr
+    // },
     ownProps() {
-      return ['type', 'title', 'properties', 'items', 'required', ...Object.keys(this.advancedAttr)]
+      return ['type', 'title', 'properties', 'items', 'required']
     },
     advancedNotEmptyValue() {
       const jsonNode = Object.assign({}, this.advancedValue)
@@ -468,7 +468,7 @@ export default {
       }
     },
     onChangeType() {
-      this.parseCustomProps()
+      // this.parseCustomProps()
       // 删除自定义属性
       this.customProps.forEach((item) => {
         // 框架设定全部三次，自己自定义的这个连个不能删
@@ -513,7 +513,7 @@ export default {
       if (node.type === 'Object' && node.properties) {
         checked ? (node['required'] = Object.keys(node.properties)) : delete node['required']
         Object.keys(node.properties).forEach((key) => this._deepCheck(checked, node.properties[key]))
-      } else if (node.type === 'Array' && node.items.type === 'Object') {
+      } else if (node.type === 'List' && node.items.type === 'Object') {
         checked ? (node.items['required'] = Object.keys(node.items.properties)) : delete node.items['required']
         Object.keys(node.items.properties).forEach((key) => this._deepCheck(checked, node.items.properties[key]))
       }
@@ -540,15 +540,15 @@ export default {
       const props = node.properties
       props[name] = { type: type, require: false } //this.$set(props,name,{type: type})
     },
-    parseCustomProps() {
-      const ownProps = this.ownProps
-      Object.keys(this.pickValue).forEach((key) => {
-        if (ownProps.indexOf(key) === -1) {
-          this.confirmAddCustomNode({ key: key, value: this.pickValue[key] })
-          // this.$delete(this.pickValue,key)
-        }
-      })
-    },
+    // parseCustomProps() {
+    //   const ownProps = this.ownProps
+    //   Object.keys(this.pickValue).forEach((key) => {
+    //     if (ownProps.indexOf(key) === -1) {
+    //       this.confirmAddCustomNode({ key: key, value: this.pickValue[key] })
+    //       // this.$delete(this.pickValue,key)
+    //     }
+    //   })
+    // },
     addCustomNode() {
       // this.$set(this.addProp,'key',this._joinName())
       // this.$set(this.addProp,'value','')
@@ -591,13 +591,13 @@ export default {
     },
     onSetting() {
       this.modalVisible = true
-      this.advancedValue = { ...this.advanced.value }
-      for (const k in this.advancedValue) {
-        if (this.pickValue[k]) {
-          this.advancedValue[k] = this.pickValue[k]
-        }
-      }
-      this.parseCustomProps()
+      // this.advancedValue = { ...this.advanced.value }
+      // for (const k in this.advancedValue) {
+      //   if (this.pickValue[k]) {
+      //     this.advancedValue[k] = this.pickValue[k]
+      //   }
+      // }
+      // this.parseCustomProps()
     },
 
     handleOk() {

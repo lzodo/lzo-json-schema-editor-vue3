@@ -4,12 +4,12 @@ import _array from './array'
 import _boolean from './boolean'
 import _integer from './integer'
 import _number from './number'
-const TYPE_NAME = ['String', 'Number', 'Integer', 'Object', 'Array', 'Boolean']
+const TYPE_NAME = ['String', 'Integer', 'Object', 'List', 'Boolean', 'Long']
 
 const TYPE = {
   Object: _object,
   String: _string,
-  Array: _array,
+  List: _array,
   Boolean: _boolean,
   Integer: _integer,
   Number: _number,
