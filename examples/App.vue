@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div class="container">
-      <json-schema-editor class="schema" :value="tree" disabledType lang="zh_CN" custom pmsType="debug" />
+      <json-schema-editor class="schema" :value="tree" disabledType lang="zh_CN" custom />
       <pre class="code">{{ jsonStr }}</pre>
     </div>
   </div>
@@ -26,29 +26,66 @@ export default {
       importJson: '',
       visible: false,
       tree: {
-        root: {
+        // root: {
+        //   type: 'Object',
+        //   title: '根节点',
+        //   require: false,
+        //   properties: {
+        //     name: {
+        //       type: 'Object',
+        //       title: '名称',
+        //       require: false,
+        //     },
+        //     appId: {
+        //       type: 'Integer',
+        //       title: '应用ID',
+        //       require: false,
+        //     },
+        //     credate: {
+        //       type: 'String',
+        //       title: '创建日期',
+        //       format: 'date',
+        //       require: false,
+        //     },
+        //   },
+        //   // required: ['name', 'appId', 'credate'],
+        // },
+
+        body: {
+          fielId: 'body',
+          title: '出参根节点1',
           type: 'Object',
-          title: '根节点',
           require: false,
           properties: {
-            name: {
-              type: 'Object',
-              title: '名称',
-              require: false,
-            },
-            appId: {
-              type: 'Integer',
-              title: '应用ID',
-              require: false,
-            },
-            credate: {
+            msg: {
+              fielId: 'msg',
+              title: '1',
               type: 'String',
-              title: '创建日期',
-              format: 'date',
               require: false,
+              properties: {},
+            },
+            rows: {
+              fielId: 'rows',
+              title: '2',
+              type: 'Array',
+              require: false,
+              items: {},
+            },
+            total: {
+              fielId: 'total',
+              title: '3',
+              type: 'String',
+              require: false,
+              properties: {},
+            },
+            code: {
+              fielId: 'code',
+              title: '4',
+              type: 'String',
+              require: false,
+              properties: {},
             },
           },
-          // required: ['name', 'appId', 'credate'],
         },
       },
     }
