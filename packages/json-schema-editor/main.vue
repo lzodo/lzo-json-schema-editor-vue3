@@ -485,7 +485,7 @@ export default {
       delete this.pickValue['enum']
 
       if (this.isArray) {
-        this.pickValue['items'] = { type: 'String' }
+        this.pickValue['items'] = { type: 'Object', title: '列表', require: false }
       }
     },
     onCheck(e) {
