@@ -1,12 +1,13 @@
 <template>
   <div class="json-schema-editor">
     <div class="row" v-if="root">
-      <div class="col" :style="{ flex: isDebug ? 1 : 2 }"><span style="color: red">*</span>属性名</div>
+      <div class="col" :style="{ flex: isDebug || isFlow ? 1 : 2 }"><span style="color: red">*</span>属性名</div>
       <div class="col"><span style="color: red">*</span>属性含义</div>
       <div class="col" style="flex: none; width: 120px" v-if="isApiConfig"><span style="color: red">*</span>类型</div>
       <div class="col" style="flex: none; width: 120px"><span style="color: red">*</span>是否必填</div>
-      <div class="col">{{ isApiConfig ? '默认值' : '参数值' }}</div>
-      <div class="col" style="flex: none; width: 60px" v-if="isApiConfig">存入参</div>
+      <div class="col" v-if="isApiConfig || isDebug">{{ isApiConfig ? '默认值' : '参数值' }}</div>
+      <div class="col" v-if="isFlow && !isResBody">取值</div>
+      <div class="col" style="flex: none; width: 60px" v-if="isFlow && isResBody">存入参</div>
       <!-- <div class="col">参数示例</div>
       <div class="col">备注</div> -->
       <div class="col left" v-if="isApiConfig">操作</div>
@@ -14,7 +15,7 @@
 
     <a-form ref="ruleForm" class="row" :model="pickValue">
       <!-- 名称  -->
-      <div class="ant-col-name col" :style="{ flex: isDebug ? 1 : 2 }">
+      <div class="ant-col-name col" :style="{ flex: isDebug || isFlow ? 1 : 2 }">
         <div :style="{ marginLeft: `${20 * deep}px` }" class="ant-col-name-c">
           <a-button v-if="pickValue.type === 'Object'" type="link" style="color: rgba(0, 0, 0, 0.65)" @click="hidden = !hidden">
             <template #icon>
@@ -25,7 +26,7 @@
           <span v-else style="width: 32px; display: inline-block"></span>
           <a-form-item name="fielId" :rules="[{ required: true, message: '请输入名称' }]">
             <a-input
-              :disabled="disabled || root || isDebug"
+              :disabled="disabled || root || isDebug || isFlow"
               v-model:value="pickValue.fielId"
               :default-value="pickKey"
               class="ant-col-name-input"
@@ -38,7 +39,12 @@
       <!-- 含义 字段标题 -->
       <div class="col" :span="6">
         <a-form-item name="title" :rules="[{ required: true, message: '请输入含义' }]">
-          <a-input v-model:value="pickValue.title" class="ant-col-title" :placeholder="local['title']" :disabled="disabledType || isDebug" />
+          <a-input
+            v-model:value="pickValue.title"
+            class="ant-col-title"
+            :placeholder="local['title']"
+            :disabled="disabledType || isDebug || isFlow || isFlow"
+          />
         </a-form-item>
       </div>
 
@@ -46,7 +52,7 @@
       <div class="col" style="flex: none; width: 120px" v-if="isApiConfig">
         <a-select
           v-model:value="pickValue.type"
-          :disabled="disabledType || isDebug"
+          :disabled="disabledType || isDebug || isFlow"
           class="ant-col-type"
           @change="onChangeType"
           :getPopupContainer="
@@ -76,7 +82,7 @@
 
         <a-select
           v-model:value="pickValue.require"
-          :disabled="disabledType || isDebug"
+          :disabled="disabledType || isDebug || isFlow"
           class="ant-col-type"
           :getPopupContainer="
             (triggerNode) => {
@@ -89,9 +95,21 @@
           </a-select-option>
         </a-select>
       </div>
+      <!-- 取值规则 -->
+      <div class="col" :span="6" v-if="isFlow && !isResBody">
+        <!-- <a-input v-model:value="pickValue.defaultValue" class="ant-col-title" :placeholder="local['defaultValue']" :disabled="disabledType" /> -->
+        <a-cascader
+          :disabled="disabledType"
+          style="width: 100%"
+          v-model:value="pickValue.defaultValue"
+          :options="variableList"
+          placeholder="请选择"
+          :fieldNames="{ label: 'propName', value: 'propKey', children: 'objectStructure' }"
+        />
+      </div>
 
       <!-- 默认值 -->
-      <div class="col" :span="6">
+      <div class="col" :span="6" v-if="isApiConfig || isDebug">
         <a-input v-model:value="pickValue.defaultValue" class="ant-col-title" :placeholder="local['defaultValue']" :disabled="disabledType" />
       </div>
 
@@ -105,9 +123,9 @@
         <a-input v-model:value="pickValue.example" class="ant-col-title" :placeholder="local['example']" :disabled="disabledType" />
       </div> -->
       <!-- 是否存为入参 -->
-      <div class="col" v-if="isApiConfig" style="flex: none; width: 60px">
+      <div class="col" v-if="isFlow && isResBody" style="flex: none; width: 60px">
         <a-tooltip>
-          <template v-slot:title>是否存为后续接口入参</template>
+          <template v-slot:title>是否存为后续接口入参{{ isResBody }}</template>
           <a-checkbox v-model:checked="pickValue.isSaveNext" class="ant-col-name-required" />
         </a-tooltip>
       </div>
@@ -148,6 +166,8 @@
         :lang="lang"
         :custom="custom"
         :pmsType="pmsType"
+        :pmsPosition="pmsPosition"
+        :variableList="variableList"
       />
     </template>
     <template v-if="isArray">
@@ -161,6 +181,8 @@
         :lang="lang"
         :custom="custom"
         :pmsType="pmsType"
+        :pmsPosition="pmsPosition"
+        :variableList="variableList"
       />
     </template>
     <!-- <a-button type="primary" v-if="root" @click="verification">验证</a-button> -->
@@ -254,7 +276,7 @@
 <script>
 import { isNull, renamePropertyAndKeepKeyPrecedence } from './util'
 import { TYPE_NAME } from './type/type'
-import { Row, Col, Button, Input, InputNumber, Icon, Checkbox, Select, Tooltip, Modal, Form, Switch } from 'ant-design-vue'
+import { Row, Col, Button, Input, InputNumber, Icon, Checkbox, Select, Tooltip, Modal, Form, Switch, Cascader } from 'ant-design-vue'
 import {
   CaretRightOutlined,
   CaretDownOutlined,
@@ -285,6 +307,7 @@ export default {
     AForm: Form,
     AFormItem: Form.Item,
     ASwitch: Switch,
+    ACascader: Cascader,
     CaretRightOutlined,
     CaretDownOutlined,
     SettingOutlined,
@@ -339,17 +362,29 @@ export default {
       type: String,
       default: 'zh_CN',
     },
+    // 使用场景
     pmsType: {
       type: String,
       default: 'api_config', // api_config debug
+    },
+    pmsPosition: {
+      type: String,
+      default: 'res_body', // 使用位置 req_body/res_body
+    },
+    variableList: {
+      type: Array,
+      default: () => [],
     },
   },
   computed: {
     isApiConfig: (v) => v.pmsType == 'api_config',
     isDebug: (v) => v.pmsType == 'debug',
+    isFlow: (v) => v.pmsType == 'flow',
+    isResBody: (v) => v.pmsPosition == 'res_body',
     pickValue() {
       let pack = Object.values(this.value)[0]
       pack.fielId = Object.keys(this.value)[0]
+      pack.disabled = !pack.isSaveNext
 
       return pack
     },

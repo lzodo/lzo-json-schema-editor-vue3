@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div class="container">
-      <json-schema-editor class="schema" :value="tree" disabledType lang="zh_CN" custom />
+      <json-schema-editor class="schema" :value="tree" disabledType lang="zh_CN" custom pmsPosition="req_body" pmsType="flow" :variableList="variableList" />
       <pre class="code">{{ jsonStr }}</pre>
     </div>
   </div>
@@ -25,6 +25,102 @@ export default {
     return {
       importJson: '',
       visible: false,
+      variableList: [
+        {
+          propKey: '25',
+          propName: '25',
+          type: 'Object',
+          objectStructure: [
+            {
+              propKey: 'body',
+              propName: '出参根节点',
+              type: 'Object',
+              isRequired: 0,
+              itemType: '',
+              objectStructure: [
+                {
+                  propKey: 'code',
+                  propName: '返回code值',
+                  type: 'Integer',
+                  isRequired: 0,
+                  itemType: '',
+                  objectStructure: [],
+                  defaultValue: '33',
+                },
+                {
+                  propKey: 'msg',
+                  propName: '返回msg值',
+                  type: 'String',
+                  isRequired: 0,
+                  disabled: true,
+                  itemType: '',
+                  objectStructure: [],
+                  defaultValue: '33',
+                },
+                {
+                  propKey: 'data',
+                  propName: '返回data值',
+                  type: 'Object',
+                  isRequired: 0,
+                  itemType: '',
+                  objectStructure: [
+                    {
+                      propKey: 'userInfo',
+                      propName: '返回用户信息',
+                      type: 'String',
+                      isRequired: 0,
+                      itemType: '',
+                      objectStructure: [],
+                    },
+                    {
+                      propKey: 'token',
+                      propName: '返回token值',
+                      type: 'String',
+                      isRequired: 0,
+                      itemType: '',
+                      objectStructure: [],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          propKey: 'STAET',
+          propName: '开始节点',
+          type: 'Object',
+          objectStructure: [
+            {
+              propKey: '11',
+              propName: '11',
+              defaultValue: '',
+              type: 'String',
+              isRequired: true,
+              itemType: '',
+              objectStructure: [],
+            },
+            {
+              propKey: '22',
+              propName: '22',
+              defaultValue: '',
+              type: 'String',
+              isRequired: true,
+              itemType: '',
+              objectStructure: [],
+            },
+            {
+              propKey: '33',
+              propName: '33',
+              defaultValue: '',
+              type: 'String',
+              isRequired: false,
+              itemType: '',
+              objectStructure: [],
+            },
+          ],
+        },
+      ],
       tree: {
         // root: {
         //   type: 'Object',
