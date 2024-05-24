@@ -3,14 +3,14 @@
     <div class="row" v-if="root">
       <div class="col" :style="{ flex: isDebug || isFlow ? 1 : 2 }"><span style="color: red">*</span>属性名</div>
       <div class="col"><span style="color: red">*</span>属性含义</div>
-      <div class="col" style="flex: none; width: 120px" v-if="isApiConfig"><span style="color: red">*</span>类型</div>
+      <div class="col" style="flex: none; width: 120px" v-if="isApiConfig || isFlowEnd"><span style="color: red">*</span>类型</div>
       <div class="col" style="flex: none; width: 120px"><span style="color: red">*</span>是否必填</div>
       <div class="col" v-if="isApiConfig || isDebug">{{ isApiConfig ? '默认值' : '参数值' }}</div>
-      <div class="col" v-if="isFlow && !isResBody">取值</div>
+      <div class="col" v-if="(isFlow && !isResBody) || isFlowEnd">取值</div>
       <div class="col" style="flex: none; width: 60px" v-if="isFlow && isResBody">存入参</div>
       <!-- <div class="col">参数示例</div>
       <div class="col">备注</div> -->
-      <div class="col left" v-if="isApiConfig">操作</div>
+      <div class="col left" v-if="isApiConfig || isFlowEnd">操作</div>
     </div>
 
     <a-form ref="ruleForm" class="row" :model="pickValue">
@@ -49,7 +49,7 @@
       </div>
 
       <!-- 数据类型 -->
-      <div class="col" style="flex: none; width: 120px" v-if="isApiConfig">
+      <div class="col" style="flex: none; width: 120px" v-if="isApiConfig || isFlowEnd">
         <a-select
           v-model:value="pickValue.type"
           :disabled="disabledType || isDebug || isFlow"
@@ -96,12 +96,12 @@
         </a-select>
       </div>
       <!-- 取值规则 -->
-      <div class="col" :span="6" v-if="isFlow && !isResBody">
+      <div class="col" :span="6" v-if="(isFlow && !isResBody) || isFlowEnd">
         <!-- <a-input v-model:value="pickValue.defaultValue" class="ant-col-title" :placeholder="local['defaultValue']" :disabled="disabledType" /> -->
         <a-cascader
           :disabled="disabledType"
           style="width: 100%"
-          v-model:value="pickValue.defaultValue"
+          v-model:value="pickValue.ruleResPath"
           :options="variableList"
           placeholder="请选择"
           :fieldNames="{ label: 'propName', value: 'propKey', children: 'objectStructure' }"
@@ -131,14 +131,14 @@
       </div>
 
       <!-- 图标 -->
-      <div :span="6" class="ant-col-setting col left" v-if="isApiConfig">
-        <a-tooltip>
-          <template v-slot:title>{{ local['preview'] }}</template>
-          <a-button type="link" class="setting-icon" @click="onSetting">
-            <!-- <template #icon><setting-outlined /></template> -->
-            <template #icon><eye-outlined /></template>
-          </a-button>
-        </a-tooltip>
+      <div :span="6" class="ant-col-setting col left" v-if="isApiConfig || isFlowEnd">
+        <!-- <a-tooltip> -->
+        <!-- <template v-slot:title>{{ local['preview'] }}</template> -->
+        <!-- <a-button type="link" class="setting-icon" @click="onSetting"> -->
+        <!-- <template #icon><setting-outlined /></template> -->
+        <!-- <template #icon><eye-outlined /></template> -->
+        <!-- </a-button> -->
+        <!-- </a-tooltip> -->
         <a-tooltip v-if="isObject">
           <template v-slot:title>{{ local['add_child_node'] }}</template>
           <a-button type="link" class="plus-icon" @click="addChild">
@@ -381,6 +381,7 @@ export default {
     isDebug: (v) => v.pmsType == 'debug',
     isFlow: (v) => v.pmsType == 'flow',
     isResBody: (v) => v.pmsPosition == 'res_body',
+    isFlowEnd: (v) => v.pmsType == 'flowEnd',
     pickValue() {
       let pack = Object.values(this.value)[0]
       pack.fielId = Object.keys(this.value)[0]

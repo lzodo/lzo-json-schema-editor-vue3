@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div class="container">
-      <json-schema-editor class="schema" :value="tree" disabledType lang="zh_CN" custom pmsPosition="req_body" pmsType="flow" :variableList="variableList" />
+      <json-schema-editor class="schema" :value="tree" disabledType lang="zh_CN" custom pmsType="flowEnd" :variableList="variableList" />
       <pre class="code">{{ jsonStr }}</pre>
     </div>
   </div>

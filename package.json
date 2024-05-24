@@ -1,6 +1,6 @@
 {
   "name": "lzo-json-schema-editor-vue3",
-  "version": "1.4.0",
+  "version": "1.4.2",
   "author": "lzoxun",
   "description": "A json-schema editor of high efficient and easy-to-use, base on Vue3",
   "keywords": [
