@@ -1,21 +1,21 @@
 <template>
   <div class="json-schema-editor">
     <div class="row" v-if="root">
-      <div class="col" :style="{ flex: isDebug || isFlow ? 1 : 2 }"><span style="color: red">*</span>属性名</div>
-      <div class="col"><span style="color: red">*</span>属性含义</div>
+      <div class="col" style="flex: none; width: 300px"><span style="color: red">*</span>属性名</div>
+      <div class="col" style="flex: none; width: 200px"><span style="color: red">*</span>属性含义</div>
       <div class="col" style="flex: none; width: 120px" v-if="isApiConfig || isFlowEnd"><span style="color: red">*</span>类型</div>
       <div class="col" style="flex: none; width: 120px"><span style="color: red">*</span>是否必填</div>
-      <div class="col" v-if="isApiConfig || isDebug">{{ isApiConfig ? '默认值' : '参数值' }}</div>
-      <div class="col" v-if="(isFlow && !isResBody) || isFlowEnd">取值</div>
+      <div class="col" style="flex: none; width: 180px" v-if="(isApiConfig || isDebug) && !hideDefaultValue">{{ isApiConfig ? '默认值' : '参数值' }}</div>
+      <div class="col" style="flex: none; width: 250px" v-if="(isFlow && !isResBody) || isFlowEnd">取值</div>
       <div class="col" style="flex: none; width: 60px" v-if="isFlow && isResBody">存入参</div>
       <!-- <div class="col">参数示例</div>
       <div class="col">备注</div> -->
-      <div class="col left" v-if="isApiConfig || isFlowEnd">操作</div>
+      <div class="col left" style="flex: none; width: 90px" v-if="isApiConfig || isFlowEnd">操作</div>
     </div>
 
     <a-form ref="ruleForm" class="row" :model="pickValue">
       <!-- 名称  -->
-      <div class="ant-col-name col" :style="{ flex: isDebug || isFlow ? 1 : 2 }">
+      <div class="ant-col-name col" style="flex: none; width: 300px">
         <div :style="{ marginLeft: `${20 * deep}px` }" class="ant-col-name-c">
           <a-button v-if="pickValue.type === 'Object'" type="link" style="color: rgba(0, 0, 0, 0.65)" @click="hidden = !hidden">
             <template #icon>
@@ -37,7 +37,7 @@
         </div>
       </div>
       <!-- 含义 字段标题 -->
-      <div class="col" :span="6">
+      <div class="col" :span="6" style="flex: none; width: 200px">
         <a-form-item name="title" :rules="[{ required: true, message: '请输入含义' }]">
           <a-input
             v-model:value="pickValue.title"
@@ -96,9 +96,10 @@
         </a-select>
       </div>
       <!-- 取值规则 -->
-      <div class="col" :span="6" v-if="(isFlow && !isResBody) || isFlowEnd">
+      <div class="col" :span="6" style="flex: none; width: 250px" v-if="(isFlow && !isResBody) || isFlowEnd">
         <!-- <a-input v-model:value="pickValue.defaultValue" class="ant-col-title" :placeholder="local['defaultValue']" :disabled="disabledType" /> -->
         <a-cascader
+          change-on-select
           :disabled="disabledType"
           style="width: 100%"
           v-model:value="pickValue.ruleResPath"
@@ -109,8 +110,9 @@
       </div>
 
       <!-- 默认值 -->
-      <div class="col" :span="6" v-if="isApiConfig || isDebug">
+      <div class="col" :span="6" style="flex: none; width: 180px" v-if="(isApiConfig || isDebug) && !hideDefaultValue">
         <a-input v-model:value="pickValue.defaultValue" class="ant-col-title" :placeholder="local['defaultValue']" :disabled="disabledType" />
+        <!-- :disabled="disabledType || ['Object', 'List', 'Array'].includes(pickValue.type)" -->
       </div>
 
       <!-- 参数示例 -->
@@ -131,7 +133,7 @@
       </div>
 
       <!-- 图标 -->
-      <div :span="6" class="ant-col-setting col left" v-if="isApiConfig || isFlowEnd">
+      <div :span="6" class="ant-col-setting col left" style="flex: none; width: 90px" v-if="isApiConfig || isFlowEnd">
         <!-- <a-tooltip> -->
         <!-- <template v-slot:title>{{ local['preview'] }}</template> -->
         <!-- <a-button type="link" class="setting-icon" @click="onSetting"> -->
@@ -168,6 +170,7 @@
         :pmsType="pmsType"
         :pmsPosition="pmsPosition"
         :variableList="variableList"
+        :hideDefaultValue="hideDefaultValue"
       />
     </template>
     <template v-if="isArray">
@@ -183,6 +186,7 @@
         :pmsType="pmsType"
         :pmsPosition="pmsPosition"
         :variableList="variableList"
+        :hideDefaultValue="hideDefaultValue"
       />
     </template>
     <!-- <a-button type="primary" v-if="root" @click="verification">验证</a-button> -->
@@ -374,6 +378,11 @@ export default {
     variableList: {
       type: Array,
       default: () => [],
+    },
+    hideDefaultValue: {
+      // 是否隐藏默认值
+      type: Boolean,
+      default: false,
     },
   },
   computed: {
@@ -659,6 +668,8 @@ export default {
 }
 </script>
 <style scoped>
+.json-schema-editor {
+}
 .json-schema-editor .row {
   display: flex;
   width: 100%;
