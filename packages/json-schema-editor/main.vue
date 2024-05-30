@@ -583,7 +583,7 @@ export default {
       const node = this.pickValue
       node.properties || (node['properties'] = {}) // this.$set(node,'properties',{})
       const props = node.properties
-      props[name] = { type: type, require: false } //this.$set(props,name,{type: type})
+      props[name] = { type: type, require: false, isSaveNext: true } //this.$set(props,name,{type: type})
     },
     // parseCustomProps() {
     //   const ownProps = this.ownProps
@@ -668,8 +668,6 @@ export default {
 }
 </script>
 <style scoped>
-.json-schema-editor {
-}
 .json-schema-editor .row {
   display: flex;
   width: 100%;
