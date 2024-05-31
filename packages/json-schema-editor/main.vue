@@ -1,6 +1,6 @@
 <template>
-  <div class="json-schema-editor">
-    <div class="row" v-if="root">
+  <div class="json-schema-editor" :class="{ root }">
+    <div class="row header" v-if="root">
       <div class="col" style="flex: none; width: 300px"><span style="color: red">*</span>属性名</div>
       <div class="col" style="flex: none; width: 200px"><span style="color: red">*</span>属性含义</div>
       <div class="col" style="flex: none; width: 120px" v-if="isApiConfig || isFlowEnd"><span style="color: red">*</span>类型</div>
@@ -583,7 +583,7 @@ export default {
       const node = this.pickValue
       node.properties || (node['properties'] = {}) // this.$set(node,'properties',{})
       const props = node.properties
-      props[name] = { type: type, require: false, isSaveNext: true } //this.$set(props,name,{type: type})
+      props[name] = { type: type, require: true, isSaveNext: true } //this.$set(props,name,{type: type})
     },
     // parseCustomProps() {
     //   const ownProps = this.ownProps
@@ -668,11 +668,22 @@ export default {
 }
 </script>
 <style scoped>
+.json-schema-editor.root {
+  border: 1px solid #f2f2f2;
+  padding: 0;
+  width: auto;
+  float: left;
+}
 .json-schema-editor .row {
   display: flex;
   width: 100%;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   /* margin: 12px; */
+}
+.json-schema-editor .row.header {
+  background-color: #f2f2f2;
+  height: 35px;
+  line-height: 35px;
 }
 .json-schema-editor .row .col {
   padding: 0 8px;
