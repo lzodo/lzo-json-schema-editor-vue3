@@ -105,6 +105,7 @@
           v-model:value="pickValue.ruleResPath"
           :options="variableList"
           placeholder="请选择"
+          :show-search="{ filter }"
           :fieldNames="{ label: 'propName', value: 'propKey', children: 'objectStructure' }"
         />
       </div>
@@ -482,6 +483,9 @@ export default {
     }
   },
   methods: {
+    filter(inputValue, path) {
+      return path.some((option) => option.propName.toLowerCase().indexOf(inputValue.toLowerCase()) > -1)
+    },
     onFinish() {
       // console.log(this.$refs.ruleForm, 889990)
       // this.$refs.ruleForm.validate().then(() => {
