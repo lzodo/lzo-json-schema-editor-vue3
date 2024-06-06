@@ -112,7 +112,12 @@
 
       <!-- 默认值 -->
       <div class="col" :span="6" style="flex: none; width: 180px" v-if="(isApiConfig || isDebug) && !hideDefaultValue">
-        <a-input v-model:value="pickValue.defaultValue" class="ant-col-title" :placeholder="local['defaultValue']" :disabled="disabledType" />
+        <a-input
+          v-model:value="pickValue.defaultValue"
+          class="ant-col-title"
+          :placeholder="local['defaultValue']"
+          :disabled="disabledType || ['Object', 'List', 'Array'].includes(pickValue.type)"
+        />
         <!-- :disabled="disabledType || ['Object', 'List', 'Array'].includes(pickValue.type)" -->
       </div>
 
