@@ -3,9 +3,9 @@
     <div class="row header" v-if="root">
       <div class="col" style="flex: none; width: 300px"><span style="color: red">*</span>属性名</div>
       <div class="col" style="flex: none; width: 200px"><span style="color: red">*</span>属性含义</div>
-      <div class="col" style="flex: none; width: 120px" v-if="isApiConfig || isFlowEnd"><span style="color: red">*</span>类型</div>
       <div class="col" style="flex: none; width: 120px"><span style="color: red">*</span>是否必填</div>
-      <div class="col" style="flex: none; width: 180px" v-if="(isApiConfig || isDebug) && !hideDefaultValue">{{ isApiConfig ? '默认值' : '参数值' }}</div>
+      <div class="col" style="flex: none; width: 120px" v-if="isApiConfig || isDebug || isFlowEnd"><span style="color: red">*</span>类型</div>
+      <div class="col" style="flex: none; width: 200px" v-if="(isApiConfig || isDebug) && !hideDefaultValue">{{ isApiConfig ? '默认值' : '参数值' }}</div>
       <div class="col" style="flex: none; width: 250px" v-if="(isFlow && !isResBody) || isFlowEnd">取值</div>
       <div class="col" style="flex: none; width: 60px" v-if="isFlow && isResBody">存入参</div>
       <!-- <div class="col">参数示例</div>
@@ -48,25 +48,6 @@
         </a-form-item>
       </div>
 
-      <!-- 数据类型 -->
-      <div class="col" style="flex: none; width: 120px" v-if="isApiConfig || isFlowEnd">
-        <a-select
-          v-model:value="pickValue.type"
-          :disabled="disabledType || isDebug || isFlow"
-          class="ant-col-type"
-          @change="onChangeType"
-          :getPopupContainer="
-            (triggerNode) => {
-              return triggerNode.parentNode || document.body
-            }
-          "
-        >
-          <a-select-option :key="t" v-for="t in TYPE_NAME">
-            {{ t }}
-          </a-select-option>
-        </a-select>
-      </div>
-
       <!-- 是否必填 -->
       <div class="col required" style="flex: none; width: 120px">
         <!-- 提取到外面 -->
@@ -95,6 +76,26 @@
           </a-select-option>
         </a-select>
       </div>
+
+      <!-- 数据类型 -->
+      <div class="col" style="flex: none; width: 120px" v-if="isApiConfig || isDebug || isFlowEnd">
+        <a-select
+          v-model:value="pickValue.type"
+          :disabled="disabledType || isDebug || isFlow"
+          class="ant-col-type"
+          @change="onChangeType"
+          :getPopupContainer="
+            (triggerNode) => {
+              return triggerNode.parentNode || document.body
+            }
+          "
+        >
+          <a-select-option :key="t" v-for="t in TYPE_NAME">
+            {{ t }}
+          </a-select-option>
+        </a-select>
+      </div>
+
       <!-- 取值规则 -->
       <div class="col" :span="6" style="flex: none; width: 250px" v-if="(isFlow && !isResBody) || isFlowEnd">
         <!-- <a-input v-model:value="pickValue.defaultValue" class="ant-col-title" :placeholder="local['defaultValue']" :disabled="disabledType" /> -->
@@ -111,25 +112,65 @@
       </div>
 
       <!-- 默认值 -->
-      <div class="col" :span="6" style="flex: none; width: 180px" v-if="(isApiConfig || isDebug) && !hideDefaultValue">
-        <a-input
+      <div class="col" :span="6" style="flex: none; width: 200px" v-if="(isApiConfig || isDebug) && !hideDefaultValue">
+        <!-- <a-input
           v-model:value="pickValue.defaultValue"
           class="ant-col-title"
           :placeholder="local['defaultValue']"
           :disabled="disabledType || ['Object', 'List', 'Array'].includes(pickValue.type)"
-        />
+        /> -->
         <!-- :disabled="disabledType || ['Object', 'List', 'Array'].includes(pickValue.type)" -->
+
+        <template v-if="pickValue.type === 'Long'">
+          <a-input-number
+            v-model:value="pickValue.defaultValue"
+            :min="-9223372036854775808"
+            :max="9223372036854775807"
+            string-mode
+            class="ant-col-title"
+            :placeholder="local['defaultValue']"
+            style="width: 100%"
+          />
+        </template>
+        <template v-else-if="pickValue.type === 'Integer'">
+          <a-input-number
+            v-model:value="pickValue.defaultValue"
+            :min="-2147483648"
+            :max="2147483647"
+            string-mode
+            class="ant-col-title"
+            :placeholder="local['defaultValue']"
+            style="width: 100%"
+          />
+        </template>
+        <template v-else-if="pickValue.type === 'Date' || pickValue.type === 'DateTime'">
+          <a-date-picker
+            :locale="locale"
+            style="width: 100%"
+            v-model:value="pickValue.defaultValue"
+            :value-format="pickValue.type === 'Date' ? 'YYYY-MM-DD' : 'YYYY-MM-DD HH:mm:ss'"
+            :show-time="pickValue.type === 'Date' ? false : { format: 'HH:mm:ss' }"
+          />
+        </template>
+        <template v-else-if="pickValue.type === 'Boolean'">
+          <a-switch
+            v-model:checked="pickValue.defaultValue"
+            :checkedValue="true"
+            :unCheckedValue="false"
+            class="ant-col-title"
+            :placeholder="local['defaultValue']"
+          />
+        </template>
+        <template v-else>
+          <a-input
+            v-model:value="pickValue.defaultValue"
+            class="ant-col-title"
+            :placeholder="local['defaultValue']"
+            :disabled="disabledType || ['Object', 'List', 'Array'].includes(pickValue.type)"
+          />
+        </template>
       </div>
 
-      <!-- 参数示例 -->
-      <!-- <div class="col" :span="6">
-        <a-input v-model:value="pickValue.description" class="ant-col-title" :placeholder="local['description']" :disabled="disabledType" />
-      </div> -->
-
-      <!-- 备注 -->
-      <!-- <div class="col" :span="6">
-        <a-input v-model:value="pickValue.example" class="ant-col-title" :placeholder="local['example']" :disabled="disabledType" />
-      </div> -->
       <!-- 是否存为入参 -->
       <div class="col" v-if="isFlow && isResBody" style="flex: none; width: 60px">
         <a-tooltip>
@@ -286,7 +327,7 @@
 <script>
 import { isNull, renamePropertyAndKeepKeyPrecedence } from './util'
 import { TYPE_NAME } from './type/type'
-import { Row, Col, Button, Input, InputNumber, Icon, Checkbox, Select, Tooltip, Modal, Form, Switch, Cascader } from 'ant-design-vue'
+import { Row, Col, Button, Input, InputNumber, Icon, Checkbox, Select, Tooltip, Modal, Form, Switch, Cascader, DatePicker } from 'ant-design-vue'
 import {
   CaretRightOutlined,
   CaretDownOutlined,
@@ -298,6 +339,11 @@ import {
   DeleteOutlined,
 } from '@ant-design/icons-vue'
 import LocalProvider from './LocalProvider'
+import locale from 'ant-design-vue/es/date-picker/locale/zh_CN'
+import dayjs from 'dayjs'
+import 'dayjs/locale/zh-cn'
+dayjs.locale('zh-cn')
+
 export default {
   name: 'JsonSchemaEditor',
   components: {
@@ -318,6 +364,7 @@ export default {
     AFormItem: Form.Item,
     ASwitch: Switch,
     ACascader: Cascader,
+    ADatePicker: DatePicker,
     CaretRightOutlined,
     CaretDownOutlined,
     SettingOutlined,
@@ -450,6 +497,7 @@ export default {
   },
   data() {
     return {
+      locale,
       TYPE_NAME,
       hidden: false,
       countAdd: 1,
@@ -522,6 +570,8 @@ export default {
       }
     },
     onChangeType() {
+      this.pickValue.defaultValue = ''
+
       // this.parseCustomProps()
       // 删除自定义属性
       this.customProps.forEach((item) => {
