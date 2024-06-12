@@ -108,6 +108,7 @@
           placeholder="请选择"
           :show-search="{ filter }"
           :fieldNames="{ label: 'propName', value: 'propKey', children: 'objectStructure' }"
+          @change="(data) => changeCascader(data, pickValue)"
         />
       </div>
 
@@ -536,6 +537,12 @@ export default {
     }
   },
   methods: {
+    changeCascader(data, param) {
+      // 不能只选开始节点参数位置和api节点参数位置
+      if (data.length < 3) {
+        param.ruleResPath = []
+      }
+    },
     filter(inputValue, path) {
       return path.some((option) => option.propName.toLowerCase().indexOf(inputValue.toLowerCase()) > -1)
     },
