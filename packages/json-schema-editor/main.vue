@@ -109,6 +109,7 @@
           :show-search="{ filter }"
           :fieldNames="{ label: 'propName', value: 'propKey', children: 'objectStructure' }"
           @change="(data) => changeCascader(data, pickValue)"
+          notFoundContent="无同数据类型出参变量可选"
         />
       </div>
 
@@ -566,6 +567,8 @@ export default {
           }
         } else if (item.type === param.type) {
           onlyTypeList.push(item)
+        } else {
+          onlyTypeList.push({ ...item, disabled: true })
         }
       })
       return onlyTypeList
