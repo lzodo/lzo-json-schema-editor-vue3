@@ -104,7 +104,7 @@
           :disabled="disabledType"
           style="width: 100%"
           v-model:value="pickValue.ruleResPath"
-          :options="variableList"
+          :options="filterType(variableList, pickValue)"
           placeholder="请选择"
           :show-search="{ filter }"
           :fieldNames="{ label: 'propName', value: 'propKey', children: 'objectStructure' }"
@@ -538,10 +538,51 @@ export default {
   },
   methods: {
     changeCascader(data, param) {
+      const typeObj = this.getType([...JSON.parse(JSON.stringify(this.variableList))], [...data])
       // 不能只选开始节点参数位置和api节点参数位置
       if (data.length < 3) {
         param.ruleResPath = []
+      } else if (typeObj && typeObj.type !== param.type) {
+        // 选择的属性类型与当前行的属性不同变为[], 经过filterType处理后这边只处理Object类型的情况
+        param.ruleResPath = []
       }
+    },
+
+    /**
+     * 取值数据进行过来，值能选择与当前操作行类型相同的父节点出参
+     * @param list 所有父Api节点出参和开始节点入参组成的数据
+     * @param param 当前操作行
+     */
+    filterType(list, param) {
+      const onlyTypeList = []
+      list.forEach((item) => {
+        if (item.type === 'Object') {
+          const objectStructure = this.filterType(item.objectStructure, param)
+          if (objectStructure.length) {
+            onlyTypeList.push({
+              ...item,
+              objectStructure,
+            })
+          }
+        } else if (item.type === param.type) {
+          onlyTypeList.push(item)
+        }
+      })
+      return onlyTypeList
+    },
+    /**
+     * 获取某一项的数据 source 数据中 与value最后一个元素桶级别桶属性的详细信息
+     * @param source 树形数组数据源
+     * @param value 联级选择数组路径
+     * @returns
+     */
+    getType(source, value) {
+      const val = value.shift()
+      const newSource = source.find((item) => item.propKey === val)
+      if (value.length) {
+        return this.getType([...newSource.objectStructure], value)
+      }
+      return newSource
     },
     filter(inputValue, path) {
       return path.some((option) => option.propName.toLowerCase().indexOf(inputValue.toLowerCase()) > -1)
