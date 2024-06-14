@@ -1,6 +1,6 @@
 {
   "name": "lzo-json-schema-editor-vue3",
-  "version": "1.6.1",
+  "version": "1.7.2",
   "author": "lzoxun",
   "description": "A json-schema editor of high efficient and easy-to-use, base on Vue3",
   "keywords": [
@@ -19,7 +19,7 @@
   "main": "lib/lzo-json-schema-editor-vue3.umd.min.js",
   "private": false,
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "dev": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "lib": "vue-cli-service build --target lib --name lzo-json-schema-editor-vue3 --dest lib packages/index.js"
