@@ -2,9 +2,9 @@
   <div class="json-schema-editor" :class="{ root }">
     <div class="row header" v-if="root">
       <div class="col" style="flex: none; width: 300px"><span style="color: red">*</span>属性名</div>
-      <div class="col" style="flex: none; width: 200px"><span style="color: red">*</span>属性含义</div>
-      <div class="col" style="flex: none; width: 120px"><span style="color: red">*</span>是否必填</div>
-      <div class="col" style="flex: none; width: 120px" v-if="isApiConfig || isDebug || isFlowEnd"><span style="color: red">*</span>类型</div>
+      <div class="col" style="flex: none; width: 160px"><span style="color: red">*</span>属性含义</div>
+      <div class="col" style="flex: none; width: 100px"><span style="color: red">*</span>是否必填</div>
+      <div class="col" style="flex: none; width: 140px" v-if="isApiConfig || isDebug || isFlowEnd"><span style="color: red">*</span>类型</div>
       <div class="col" style="flex: none; width: 200px" v-if="(isApiConfig || isDebug) && !hideDefaultValue">{{ isApiConfig ? '默认值' : '参数值' }}</div>
       <div class="col" style="flex: none; width: 250px" v-if="(isFlow && !isResBody) || isFlowEnd">取值</div>
       <div class="col" style="flex: none; width: 60px" v-if="isFlow && isResBody">存入参</div>
@@ -24,7 +24,8 @@
             </template>
           </a-button>
           <span v-else style="width: 32px; display: inline-block"></span>
-          <a-form-item name="fielId" :rules="[{ required: true, message: '请输入名称' }]">
+          <!-- <a-form-item name="fielId" :rules="[{ required: true, message: '请输入名称' }]"> -->
+          <a-form-item name="fielId">
             <a-input
               :disabled="disabled || root || isDebug || isFlow"
               v-model:value="pickValue.fielId"
@@ -32,24 +33,21 @@
               class="ant-col-name-input"
               @blur="onInputName"
               :key="pickValue"
+              placeholder="属性名"
             />
           </a-form-item>
         </div>
       </div>
       <!-- 含义 字段标题 -->
-      <div class="col" :span="6" style="flex: none; width: 200px">
-        <a-form-item name="title" :rules="[{ required: true, message: '请输入含义' }]">
-          <a-input
-            v-model:value="pickValue.title"
-            class="ant-col-title"
-            :placeholder="local['title']"
-            :disabled="disabledType || isDebug || isFlow || isFlow"
-          />
+      <div class="col" :span="6" style="flex: none; width: 160px">
+        <!-- <a-form-item name="title" :rules="[{ required: true, message: '请输入含义' }]"> -->
+        <a-form-item name="title">
+          <a-input v-model:value="pickValue.title" class="ant-col-title" placeholder="属性含义" :disabled="disabledType || isDebug || isFlow || isFlow" />
         </a-form-item>
       </div>
 
       <!-- 是否必填 -->
-      <div class="col required" style="flex: none; width: 120px">
+      <div class="col required" style="flex: none; width: 100px">
         <!-- 提取到外面 -->
         <!-- <a-tooltip v-if="root">
           <template v-slot:title>{{ local['checked_all'] }}</template>
@@ -78,7 +76,7 @@
       </div>
 
       <!-- 数据类型 -->
-      <div class="col" style="flex: none; width: 120px" v-if="isApiConfig || isDebug || isFlowEnd">
+      <div class="col" style="flex: none; width: 140px" v-if="isApiConfig || isDebug || isFlowEnd">
         <a-select
           v-model:value="pickValue.type"
           :disabled="disabledType || isDebug || isFlow"
@@ -128,10 +126,10 @@
             v-model:value="pickValue.defaultValue"
             :min="-9223372036854775808"
             :max="9223372036854775807"
-            string-mode
             class="ant-col-title"
             :placeholder="local['defaultValue']"
             style="width: 100%"
+            @change="(val) => onInputChange(pickValue, val)"
           />
         </template>
         <template v-else-if="pickValue.type === 'Integer'">
@@ -139,11 +137,17 @@
             v-model:value="pickValue.defaultValue"
             :min="-2147483648"
             :max="2147483647"
-            string-mode
             class="ant-col-title"
             :placeholder="local['defaultValue']"
             style="width: 100%"
+            @change="(val) => onInputChange(pickValue, val)"
           />
+        </template>
+        <template v-else-if="pickValue.type === 'Float' || pickValue.type === 'Double'">
+          <a-input-number v-model:value="pickValue.defaultValue" class="ant-col-title" :placeholder="local['defaultValue']" style="width: 100%" />
+        </template>
+        <template v-else-if="pickValue.type === 'BigDecimal'">
+          <a-input-number v-model:value="pickValue.defaultValue" string-mode class="ant-col-title" :placeholder="local['defaultValue']" style="width: 100%" />
         </template>
         <template v-else-if="pickValue.type === 'Date' || pickValue.type === 'DateTime'">
           <a-date-picker
@@ -520,24 +524,31 @@ export default {
         },
       ],
       rules: {
-        fielId: [
-          {
-            required: true,
-            message: '请输入属性',
-            type: 'string',
-          },
-        ],
-        title: [
-          {
-            required: true,
-            message: '请输入名称',
-            type: 'string',
-          },
-        ],
+        // fielId: [
+        //   {
+        //     required: true,
+        //     message: '请输入属性',
+        //     type: 'string',
+        //   },
+        // ],
+        // title: [
+        //   {
+        //     required: true,
+        //     message: '请输入名称',
+        //     type: 'string',
+        //   },
+        // ],
       },
     }
   },
   methods: {
+    onInputChange(pack, value) {
+      // 检查输入值是否包含小数点
+      if (String(value).includes('.')) {
+        // 移除小数点及其后面的数字
+        pack.defaultValue = Number(String(value).split('.')[0])
+      }
+    },
     changeCascader(data, param) {
       const typeObj = this.getType([...JSON.parse(JSON.stringify(this.variableList))], [...data])
       // 不能只选开始节点参数位置和api节点参数位置
