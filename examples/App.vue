@@ -10,6 +10,7 @@
         pmsType="api_config"
         pmsPosition="req_body"
         :variableList="variableList"
+        :hideRequire="true"
       />
       <pre class="code">{{ jsonStr }}</pre>
     </div>

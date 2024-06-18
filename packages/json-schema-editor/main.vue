@@ -3,10 +3,10 @@
     <div class="row header" v-if="root">
       <div class="col" style="flex: none; width: 300px"><span style="color: red">*</span>属性名</div>
       <div class="col" style="flex: none; width: 160px"><span style="color: red">*</span>属性含义</div>
-      <div class="col" style="flex: none; width: 100px"><span style="color: red">*</span>是否必填</div>
+      <div class="col" style="flex: none; width: 100px" v-if="!hideRequire"><span style="color: red">*</span>是否必填</div>
       <div class="col" style="flex: none; width: 140px" v-if="isApiConfig || isDebug || isFlowEnd"><span style="color: red">*</span>类型</div>
-      <div class="col" style="flex: none; width: 200px" v-if="(isApiConfig || isDebug) && !hideDefaultValue">{{ isApiConfig ? '默认值' : '参数值' }}</div>
-      <div class="col" style="flex: none; width: 250px" v-if="(isFlow && !isResBody) || isFlowEnd">取值</div>
+      <div class="col" style="flex: 1; min-width: 200px" v-if="(isApiConfig || isDebug) && !hideDefaultValue">{{ isApiConfig ? '默认值' : '参数值' }}</div>
+      <div class="col" style="flex: 1; min-width: 250px" v-if="(isFlow && !isResBody) || isFlowEnd">取值</div>
       <div class="col" style="flex: none; width: 60px" v-if="isFlow && isResBody">存入参</div>
       <!-- <div class="col">参数示例</div>
       <div class="col">备注</div> -->
@@ -47,7 +47,7 @@
       </div>
 
       <!-- 是否必填 -->
-      <div class="col required" style="flex: none; width: 100px">
+      <div class="col required" style="flex: none; width: 100px" v-if="!hideRequire">
         <!-- 提取到外面 -->
         <!-- <a-tooltip v-if="root">
           <template v-slot:title>{{ local['checked_all'] }}</template>
@@ -95,7 +95,7 @@
       </div>
 
       <!-- 取值规则 -->
-      <div class="col" :span="6" style="flex: none; width: 250px" v-if="(isFlow && !isResBody) || isFlowEnd">
+      <div class="col" :span="6" style="flex: 1; min-width: 250px" v-if="(isFlow && !isResBody) || isFlowEnd">
         <!-- <a-input v-model:value="pickValue.defaultValue" class="ant-col-title" :placeholder="local['defaultValue']" :disabled="disabledType" /> -->
         <a-cascader
           change-on-select
@@ -107,12 +107,12 @@
           :show-search="{ filter }"
           :fieldNames="{ label: 'propName', value: 'propKey', children: 'objectStructure' }"
           @change="(data) => changeCascader(data, pickValue)"
-          notFoundContent="无同数据类型出参变量可选"
+          notFoundContent="暂无数据"
         />
       </div>
 
       <!-- 默认值 -->
-      <div class="col" :span="6" style="flex: none; width: 200px" v-if="(isApiConfig || isDebug) && !hideDefaultValue">
+      <div class="col" :span="6" style="flex: 1; min-width: 200px" v-if="(isApiConfig || isDebug) && !hideDefaultValue">
         <!-- <a-input
           v-model:value="pickValue.defaultValue"
           class="ant-col-title"
@@ -224,6 +224,7 @@
         :pmsPosition="pmsPosition"
         :variableList="variableList"
         :hideDefaultValue="hideDefaultValue"
+        :hideRequire="hideRequire"
       />
     </template>
     <template v-if="isArray">
@@ -240,6 +241,7 @@
         :pmsPosition="pmsPosition"
         :variableList="variableList"
         :hideDefaultValue="hideDefaultValue"
+        :hideRequire="hideRequire"
       />
     </template>
     <!-- <a-button type="primary" v-if="root" @click="verification">验证</a-button> -->
@@ -440,6 +442,11 @@ export default {
     },
     hideDefaultValue: {
       // 是否隐藏默认值
+      type: Boolean,
+      default: false,
+    },
+    hideRequire: {
+      // 是否隐藏是否必填
       type: Boolean,
       default: false,
     },
