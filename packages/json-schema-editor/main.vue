@@ -1,10 +1,10 @@
 <template>
   <div class="json-schema-editor" :class="{ root }">
     <div class="row header" v-if="root">
-      <div class="col" style="flex: none; width: 300px"><span style="color: red">*</span>属性名</div>
-      <div class="col" style="flex: none; width: 160px"><span style="color: red">*</span>属性含义</div>
-      <div class="col" style="flex: none; width: 100px" v-if="!hideRequire"><span style="color: red">*</span>是否必填</div>
-      <div class="col" style="flex: none; width: 140px" v-if="isApiConfig || isDebug || isFlowEnd"><span style="color: red">*</span>类型</div>
+      <div class="col" style="flex: none; width: 300px"><span style="color: red">*</span>&nbsp;属性名</div>
+      <div class="col" style="flex: none; width: 160px"><span style="color: red">*</span>&nbsp;属性含义</div>
+      <div class="col" style="flex: none; width: 100px" v-if="!hideRequire"><span style="color: red">*</span>&nbsp;是否必填</div>
+      <div class="col" style="flex: none; width: 140px"><span style="color: red">*</span>&nbsp;类型</div>
       <div class="col" style="flex: 1; min-width: 200px" v-if="(isApiConfig || isDebug) && !hideDefaultValue">{{ isApiConfig ? '默认值' : '参数值' }}</div>
       <div class="col" style="flex: 1; min-width: 250px" v-if="(isFlow && !isResBody) || isFlowEnd">取值</div>
       <div class="col" style="flex: none; width: 60px" v-if="isFlow && isResBody">存入参</div>
@@ -76,7 +76,7 @@
       </div>
 
       <!-- 数据类型 -->
-      <div class="col" style="flex: none; width: 140px" v-if="isApiConfig || isDebug || isFlowEnd">
+      <div class="col" style="flex: none; width: 140px">
         <a-select
           v-model:value="pickValue.type"
           :disabled="disabledType || isDebug || isFlow"
